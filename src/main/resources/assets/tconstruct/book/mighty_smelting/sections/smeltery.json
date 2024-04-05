@@ -71,6 +71,16 @@
     "data": "smeltery/searedglass.json"
   },
   {
+    "name": "tinted_glass",
+    "type": "mantle:showcase",
+    "data": "smeltery/tinted_glass.json"
+  },
+  {
+    "name": "soul_glass",
+    "type": "mantle:showcase",
+    "data": "smeltery/soul_glass.json"
+  },
+  {
     "name": "seared_drain",
     "type": "mantle:showcase",
     "data": "smeltery/seared_drain.json"

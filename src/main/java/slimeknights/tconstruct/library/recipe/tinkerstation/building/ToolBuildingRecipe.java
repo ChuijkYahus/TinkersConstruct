@@ -31,6 +31,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   protected final ResourceLocation id;
   @Getter
   protected final String group;
+  @Getter
   protected final IModifiable output;
   protected final int outputCount;
   protected final List<Ingredient> ingredients;
@@ -39,6 +40,11 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
   @Deprecated
   public ToolBuildingRecipe(ResourceLocation id, String group, IModifiable output) {
     this(id, group, output, 1, Collections.emptyList());
+  }
+
+  /** Gets the additional recipe requirements beyond the tool parts */
+  public List<Ingredient> getExtraRequirements() {
+    return ingredients;
   }
 
   @Override
@@ -52,7 +58,10 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       return false;
     }
     List<PartRequirement> parts = output.getToolDefinition().getData().getParts();
-    if (parts.isEmpty()) {
+    int requiredInputs = parts.size() + ingredients.size();
+    int maxInputs = inv.getInputCount();
+    // disallow if we have no inputs, or if we have too few slots
+    if (requiredInputs == 0 || requiredInputs > maxInputs) {
       return false;
     }
     // each part must match the given slot
@@ -64,7 +73,7 @@ public class ToolBuildingRecipe implements ITinkerStationRecipe {
       }
     }
     // remaining slots must match extra requirements
-    for (; i < inv.getInputCount(); i++) {
+    for (; i < maxInputs; i++) {
       Ingredient ingredient = LogicHelper.getOrDefault(ingredients, i - partSize, Ingredient.EMPTY);
       if (!ingredient.test(inv.getInput(i))) {
         return false;

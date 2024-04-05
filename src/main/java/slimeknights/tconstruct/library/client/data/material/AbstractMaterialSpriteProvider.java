@@ -106,9 +106,9 @@ public abstract class AbstractMaterialSpriteProvider {
       }
       // if material registry is loaded and we are not ignoring it, allow checking that
       if (!ignoreMaterialStats && MaterialRegistry.isFullyLoaded()) {
-        return MaterialRegistry.getInstance().getMaterialStats(new MaterialId(texture), statType).isPresent();
+        return  MaterialRegistry.getInstance().getMaterialStats(new MaterialId(texture), statType).isPresent();
       }
-      return super.supportStatType(statType);
+      return false;
     }
   }
 

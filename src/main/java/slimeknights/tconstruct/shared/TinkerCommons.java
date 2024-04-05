@@ -6,11 +6,13 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.GlassBlock;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TintedGlassBlock;
@@ -47,6 +49,7 @@ import slimeknights.tconstruct.library.json.predicate.entity.LivingEntityPredica
 import slimeknights.tconstruct.library.json.predicate.entity.MobTypePredicate;
 import slimeknights.tconstruct.library.json.predicate.entity.TagEntityPredicate;
 import slimeknights.tconstruct.library.json.predicate.entity.TinkerLivingEntityPredicate;
+import slimeknights.tconstruct.library.recipe.ingredient.NoContainerIngredient;
 import slimeknights.tconstruct.library.utils.SlimeBounceHandler;
 import slimeknights.tconstruct.library.utils.Util;
 import slimeknights.tconstruct.shared.block.BetterPaneBlock;
@@ -64,6 +67,8 @@ import slimeknights.tconstruct.shared.block.WeatheringPlatformBlock;
 import slimeknights.tconstruct.shared.command.TConstructCommand;
 import slimeknights.tconstruct.shared.data.CommonRecipeProvider;
 import slimeknights.tconstruct.shared.inventory.BlockContainerOpenedTrigger;
+import slimeknights.tconstruct.shared.item.CheeseBlockItem;
+import slimeknights.tconstruct.shared.item.CheeseItem;
 import slimeknights.tconstruct.shared.item.TinkerBookItem;
 import slimeknights.tconstruct.shared.item.TinkerBookItem.BookType;
 import slimeknights.tconstruct.shared.particle.FluidParticleData;
@@ -120,6 +125,8 @@ public final class TinkerCommons extends TinkerModule {
    */
   public static final ItemObject<EdibleItem> bacon = ITEMS.register("bacon", () -> new EdibleItem(TinkerFood.BACON, TAB_GENERAL));
   public static final ItemObject<EdibleItem> jeweledApple = ITEMS.register("jeweled_apple", () -> new EdibleItem(TinkerFood.JEWELED_APPLE, TAB_GENERAL));
+  public static final ItemObject<Item> cheeseIngot = ITEMS.register("cheese_ingot", () -> new CheeseItem(new Properties().tab(TAB_GENERAL).food(TinkerFood.CHEESE)));
+  public static final ItemObject<Block> cheeseBlock = BLOCKS.register("cheese_block", () -> new HalfTransparentBlock(BlockBehaviour.Properties.of(Material.DIRT, MaterialColor.COLOR_YELLOW).strength(1.5F, 3.0F).speedFactor(0.4F).jumpFactor(0.5F).sound(SoundType.HONEY_BLOCK).noOcclusion()), block -> new CheeseBlockItem(block, new Properties().tab(TAB_GENERAL).food(TinkerFood.CHEESE)));
 
   private static final Item.Properties BOOK = new Item.Properties().tab(TAB_GENERAL).stacksTo(1);
   public static final ItemObject<TinkerBookItem> materialsAndYou = ITEMS.register("materials_and_you", () -> new TinkerBookItem(BOOK, BookType.MATERIALS_AND_YOU));
@@ -157,11 +164,13 @@ public final class TinkerCommons extends TinkerModule {
 
   @SubscribeEvent
   void registerRecipeSerializers(RegistryEvent.Register<RecipeSerializer<?>> event) {
+    CraftingHelper.register(NoContainerIngredient.ID, NoContainerIngredient.Serializer.INSTANCE);
     CraftingHelper.register(ConfigEnabledCondition.SERIALIZER);
     CriteriaTriggers.register(CONTAINER_OPENED_TRIGGER);
 
     CraftingHelper.register(TagIntersectionPresentCondition.SERIALIZER);
     CraftingHelper.register(TagDifferencePresentCondition.SERIALIZER);
+    CraftingHelper.register(new TagNotEmptyLootCondition.ConditionSerializer());
     // block predicates
     BlockPredicate.LOADER.register(getResource("and"), BlockPredicate.AND);
     BlockPredicate.LOADER.register(getResource("or"), BlockPredicate.OR);
